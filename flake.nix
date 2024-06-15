@@ -16,9 +16,20 @@
       forEachSystem = nixpkgs.lib.genAttrs (import systems);
     in
     {
-      packages = forEachSystem (system: {
-        devenv-up = self.devShells.${system}.default.config.procfileScript;
-      });
+      packages = forEachSystem (system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+        in
+        {
+          devenv-up = self.devShells.${system}.default.config.procfileScript;
+          # discord-bot = pkgs.callPackage ./nix-packages/app.nix { };
+          discord-bot = import ./nix-packages/app.nix (pkgs // { });
+        });
+
+      nixosModules = {
+        # discord-bot = import ./nix-modules/discord-bot.nix;
+        discord-bot = ./nix-modules/discord-bot.nix;
+      };
 
       devShells = forEachSystem
         (system:
