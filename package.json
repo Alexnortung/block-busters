@@ -11,6 +11,7 @@
   "dependencies": {
     "@minecraft-js/rcon": "^1.1.0",
     "discord.js": "^14.15.3",
+    "octokit": "^4.0.2",
     "rcon": "^1.1.0",
     "rcon-client": "^4.2.4",
     "zod": "^3.23.8"

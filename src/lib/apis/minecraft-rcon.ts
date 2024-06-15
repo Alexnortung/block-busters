@@ -5,7 +5,7 @@ const HOST = process.env.MINECRAFT_RCON_HOST;
 const PASSWORD = process.env.MINECRAFT_RCON_PASSWORD ?? '';
 const PORT = process.env.MINECRAFT_RCON_PORT ? parseInt(process.env.MINECRAFT_RCON_PORT) : 25575;
 
-const TIMEOUT = 5000;
+const TIMEOUT = 1000;
 
 if (!HOST) {
     console.error('MINECRAFT_RCON_HOST is required');
@@ -21,7 +21,6 @@ export const whitelistAdd = (username: string) => {
             client.removeAllListeners('authenticated');
             reject(new Error('Timeout'));
         }, TIMEOUT);
-
 
         const onReady = async () => {
             const command = `whitelist add ${username}`;
