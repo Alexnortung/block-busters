@@ -32,23 +32,28 @@ let
 in
 stdenv.mkDerivation {
   inherit pname src version;
-  nativeBuildInputs = [ makeBinaryWrapper ];
+  buildInputs = [ bun ];
 
   dontConfigure = true;
-  dontBuild = true;
+  # dontBuild = true;
+
+  buildPhase = ''
+    runHook preBuild
+
+    ln -s ${node_modules}/node_modules ./node_modules
+    bun build --compile --minify src/app.ts
+
+    runHook postBuild
+  '';
+
+  dontFixup = true;
 
   installPhase = ''
     runHook preInstall
 
     mkdir -p $out/bin
 
-    ln -s ${node_modules}/node_modules $out
-    cp -R ./* $out
-
-    # bun is referenced naked in the package.json generated script
-    makeBinaryWrapper ${bun}/bin/bun $out/bin/$pname \
-      --prefix PATH : ${lib.makeBinPath [ bun ]} \
-      --add-flags "run --prefer-offline --no-install --cwd $out ./src/app.ts"
+    cp ./app $out/bin/${pname}
 
     runHook postInstall
   '';

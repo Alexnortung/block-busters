@@ -35,7 +35,7 @@ export const execute = async (interaction: CommandInteraction) => {
     try {
         await Promise.all([
             whitelistAdd(apiUsername),
-            repositoryDispatchWhitelistAdd(apiUsername, apiId),
+            // repositoryDispatchWhitelistAdd(apiUsername, apiId),
         ]);
     } catch (error) {
         console.error(error);
