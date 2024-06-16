@@ -33,27 +33,29 @@ in
 stdenv.mkDerivation {
   inherit pname src version;
   buildInputs = [ bun ];
+  nativeBuildInputs = [ makeBinaryWrapper ];
 
   dontConfigure = true;
-  # dontBuild = true;
 
   buildPhase = ''
     runHook preBuild
 
-    ln -s ${node_modules}/node_modules ./node_modules
-    bun build --compile --minify src/app.ts
+    ln -s ${node_modules}/node_modules ./
+    bun build --minify --target bun src/app.ts > app.js
 
     runHook postBuild
   '';
-
-  dontFixup = true;
 
   installPhase = ''
     runHook preInstall
 
     mkdir -p $out/bin
 
-    cp ./app $out/bin/${pname}
+    cp app.js $out/app.js
+
+    # bun is referenced naked in the package.json generated script
+    makeBinaryWrapper ${bun}/bin/bun $out/bin/$pname \
+      --add-flags "run --prefer-offline --no-install $out/app.js"
 
     runHook postInstall
   '';
