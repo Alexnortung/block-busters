@@ -81,6 +81,7 @@ in
       serviceConfig = {
         ExecStart = "${cfg.package}/bin/block-busters-discord-bot";
         EnvironmentFile = cfg.environmentFile;
+        Restart = "always";
       };
     };
   };
