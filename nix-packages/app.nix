@@ -37,25 +37,31 @@ stdenv.mkDerivation {
 
   dontConfigure = true;
 
-  buildPhase = ''
-    runHook preBuild
-
-    ln -s ${node_modules}/node_modules ./
-    bun build --minify --target bun src/app.ts > app.js
-
-    runHook postBuild
-  '';
+  dontBuild = true;
+  # buildPhase = ''
+  #   runHook preBuild
+  #
+  #   ln -s ${node_modules}/node_modules ./
+  #   bun build --minify --target bun src/app.ts > app.js
+  #
+  #   runHook postBuild
+  # '';
 
   installPhase = ''
     runHook preInstall
 
     mkdir -p $out/bin
 
-    cp app.js $out/app.js
+    # cp app.js $out/app.js
+    ln -s ${node_modules}/node_modules $out
+    cp -R ./* $out
 
     # bun is referenced naked in the package.json generated script
+    # makeBinaryWrapper ${bun}/bin/bun $out/bin/$pname \
+    #   --add-flags "run --prefer-offline --no-install $out/app.js"
     makeBinaryWrapper ${bun}/bin/bun $out/bin/$pname \
-      --add-flags "run --prefer-offline --no-install $out/app.js"
+      --prefix PATH : ${lib.makeBinPath [ bun ]} \
+      --add-flags "run --prefer-offline --no-install $out/src/app.ts"
 
     runHook postInstall
   '';
